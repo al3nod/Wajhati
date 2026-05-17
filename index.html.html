@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">وجهتي - دليلك السياحي في الإمارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-color: #D4AF37;
+            --secondary-color: #1a472a;
+            --accent-color: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --border-color: #ddd;
+        }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+        
+        /* --- تعديل الهيدر بالكامل ليصبح كخلفية علم الإمارات --- */
+        header { 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
+            height: 90px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: #fff; /* لون احتياطي */
+        }
+        
+        /* محاكاة علم الإمارات بدقة في الخلفية */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        /* في وضع الـ RTL (العربية): الأحمر على اليمين الأقصى، وباقي الألوان تمتد لليسار */
+        html[dir="rtl"] header::before {
+            background: 
+                linear-gradient(to bottom, #007A4D 0%, #007A4D 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #000000 66.66%, #000000 100%) no-repeat left center / 82% 100%,
+                linear-gradient(to right, #CE1126 0%, #CE1126 100%) no-repeat right center / 18% 100%;
+        }
+        /* في وضع الـ LTR (الإنجليزية): الأحمر على اليسار الأقصى، وباقي الألوان تمتد لليمين */
+        html[dir="ltr"] header::before {
+            background: 
+                linear-gradient(to bottom, #007A4D 0%, #007A4D 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #000000 66.66%, #000000 100%) no-repeat right center / 82% 100%,
+                linear-gradient(to right, #CE1126 0%, #CE1126 100%) no-repeat left center / 18% 100%;
+        }
+
+        .header-container { 
+            width: 100%;
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            z-index: 2; 
+        }
+        
+        /* تمييز الخطوط لتظهر بوضوح فوق ألوان العلم المختلفة */
+        .logo { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 2.5rem; 
+            font-weight: 900; 
+            color: var(--primary-color); 
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        
+        nav ul { list-style: none; display: flex; gap: 2rem; align-items: center; }
+        nav a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 1.15rem;
+            transition: color 0.3s ease; 
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        /* جعل نصوص القائمة تتكيف تباينياً حسب جهة العلم (فوق الخلفية الغامقة) */
+        html[dir="rtl"] nav a {
+            color: #ffffff;
+        }
+        nav a:hover { color: var(--primary-color); }
+        
+        .lang-btn { 
+            background: var(--primary-color); 
+            color: #000000; 
+            border: 2px solid #000000; 
+            padding: 0.5rem 1.4rem; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-family: 'Cairo', sans-serif; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .lang-btn:hover { background: white; color: var(--secondary-color); transform: scale(1.05); }
+
+        /* باقي عناصر الصفحة */
+        .hero { background: linear-gradient(135deg, var(--secondary-color) 0%, #0d3a1a 50%, #1a472a 100%); color: white; padding: 5rem 2rem; text-align: center; position: relative; }
+        .hero h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--primary-color); text-shadow: 3px 3px 6px rgba(0,0,0,0.5); }
+        .hero p { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.9; }
+        
+        .search-box { background: white; padding: 0.8rem; border-radius: 50px; display: flex; gap: 1rem; box-shadow: 0 8px 25px rgba(0,0,0,0.2); max-width: 700px; margin: 0 auto; flex-wrap: wrap; }
+        .search-box input, .search-box select { border: none; outline: none; font-size: 1rem; font-family: 'Cairo', sans-serif; color: var(--text-dark); padding: 0.5rem; flex: 1; min-width: 150px; }
+        .search-box button { background: var(--secondary-color); color: white; border: none; padding: 0.5rem 2rem; border-radius: 50px; cursor: pointer; font-weight: 600; transition: background 0.3s ease; font-family: 'Cairo', sans-serif; }
+        .search-box button:hover { background: var(--accent-color); }
+
+        .filter-section { background: white; padding: 1.5rem; margin: 2rem auto; max-width: 1400px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { padding: 0.6rem 1.3rem; border: 2px solid var(--border-color); background: white; color: var(--text-dark); border-radius: 25px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
+        .filter-btn.active, .filter-btn:hover { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
+
+        .destinations-container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .destinations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 2rem; }
+        
+        .destination-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
+        .destination-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+        
+        .flag-card-bg { width: 100%; height: 180px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-bottom: 4px solid var(--primary-color); }
+        .flag-red { position: absolute; top: 0; left: 0; bottom: 0; width: 25%; background-color: #CE1126; }
+        html[dir="rtl"] .flag-red { left: auto; right: 0; }
+        .flag-stripes { position: absolute; top: 0; bottom: 0; left: 25%; right: 0; display: flex; flex-direction: column; }
+        html[dir="rtl"] .flag-stripes { left: 0; right: 25%; }
+        .stripe-green { flex: 1; background-color: #007A4D; }
+        .stripe-white { flex: 1; background-color: #FFFFFF; }
+        .stripe-black { flex: 1; background-color: #000000; }
+        .flag-icon { position: relative; z-index: 5; font-size: 3.2rem; background: rgba(255, 255, 255, 0.9); width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .emirate-badge { display: inline-block; background: var(--primary-color); color: var(--text-dark); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.6rem; width: fit-content; }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; }
+        .card-description { color: #666; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; flex-grow: 1; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: auto; }
+        .view-btn { background: var(--secondary-color); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: 600; transition: background 0.3s ease; font-family: 'Cairo', sans-serif; font-size: 0.85rem; }
+        .view-btn:hover { background: var(--accent-color); }
+        .location-info { font-size: 0.85rem; color: #777; display: flex; align-items: center; gap: 0.3rem; }
+
+        .emirates-info { background: linear-gradient(135deg, var(--secondary-color) 0%, #0d3a1a 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+        .emirates-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
+        .emirate-item h3 { color: var(--primary-color); margin-bottom: 0.3rem; font-size: 1.2rem; }
+        .emirate-item p { font-size: 0.85rem; opacity: 0.8; }
+        footer { background: var(--text-dark); color: white; padding: 1.5rem; text-align: center; font-size: 0.9rem; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow-y: auto; padding: 1rem; }
+        .modal-content { background-color: white; margin: 5% auto; padding: 2rem; border-radius: 15px; width: 100%; max-width: 700px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .close { color: #aaa; position: absolute; top: 1rem; left: 1.5rem; font-size: 2rem; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        html[dir="ltr"] .close { left: auto; right: 1.5rem; }
+        .close:hover { color: var(--accent-color); }
+        
+        .modal-emirate { display: inline-block; background: var(--primary-color); color: var(--text-dark); padding: 0.4rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .modal h2 { color: var(--secondary-color); margin-bottom: 0.5rem; }
+        .modal-category { font-weight: bold; color: var(--accent-color); margin-bottom: 1rem; font-size: 0.95rem; }
+        .modal-description { color: #444; line-height: 1.7; margin-bottom: 1.5rem; font-size: 1rem; }
+        
+        .modal-activities, .modal-location { background: var(--bg-light); padding: 1.2rem; border-radius: 10px; margin-bottom: 1rem; }
+        .modal-activities h4, .modal-location h4 { color: var(--secondary-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .modal-activities ul { list-style: none; }
+        .modal-activities li { padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .modal-activities li::before { content: "✓"; color: #007A4D; font-weight: bold; }
+        
+        .maps-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: #007A4D; color: white; padding: 0.6rem 1.2rem; border-radius: 25px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; transition: background 0.2s; font-size: 0.9rem; }
+        .maps-btn:hover { background: #1a472a; }
+
+        @media (max-width: 768px) {
+            header { height: auto; padding: 1rem 0; }
+            html[dir="rtl"] header::before, html[dir="ltr"] header::before { background: linear-gradient(135deg, #CE1126, #007A4D, #000000); }
+            .header-container { flex-direction: column; gap: 1rem; text-align: center; }
+            nav ul { gap: 1rem; }
+            .hero h1 { font-size: 2.2rem; }
+            .search-box { flex-direction: column; border-radius: 20px; }
+            .search-box button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo" id="logoText">وجهتي</div>
+            <nav>
+                <ul>
+                    <li><a href="#home" id="navHome">الرئيسية</a></li>
+                    <li><a href="#destinations" id="navDestinations">الوجهات</a></li>
+                    <li><button class="lang-btn" onclick="toggleLanguage()">English</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 id="heroTitle">استكشف جمال الإمارات</h1>
+            <p id="heroDesc">اكتشف أروع الوجهات السياحية في دولة الإمارات العربية المتحدة</p>
+            <div class="search-box">
+                <select id="emirateFilter"></select>
+                <input type="text" id="searchInput" placeholder="ابحث عن وجهة...">
+                <button onclick="filterDestinations()" id="searchBtn">ابحث</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="filter-section" id="destinations">
+        <div class="filter-buttons" id="categoryFilterContainer"></div>
+    </section>
+
+    <section class="destinations-container">
+        <div class="destinations-grid" id="destinationsGrid"></div>
+    </section>
+
+    <section class="emirates-info">
+        <div class="emirates-grid" id="emiratesGridSummary"></div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2026 <span id="footerText">وجهتي - جميع الحقوق محفوظة</span></p>
+        </div>
+    </footer>
+
+    <div id="destinationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <span class="modal-emirate" id="modalEmirateText"></span>
+            <h2 id="modalTitle"></h2>
+            <p class="modal-category" id="modalCategory"></p>
+            <div class="modal-description" id="modalDescription"></div>
+            
+            <div class="modal-activities">
+                <h4 id="modalActTitle"><i class="fas fa-tasks"></i> الفعاليات والأنشطة:</h4>
+                <ul id="modalActivities"></ul>
+            </div>
+            
+            <div class="modal-location">
+                <h4 id="modalLocTitle"><i class="fas fa-map-marker-alt"></i> الموقع</h4>
+                <p id="modalLocation" style="margin-bottom: 10px;"></p>
+                <a id="mapsLink" href="#" target="_blank" class="maps-btn">
+                    <i class="fas fa-directions"></i> <span id="modalMapsBtnText">عرض على الخريطة</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'ar';
+
+        const translations = {
+            ar: {
+                title: "وجهتي - دليلك السياحي في الإمارات", logo: "وجهتي", home: "الرئيسية", destinations: "الوجهات",
+                heroTitle: "استكشف جمال الإمارات", heroDesc: "اكتشف أروع الوجهات السياحية في دولة الإمارات العربية المتحدة",
+                allEmirates: "جميع الإمارات", searchPlaceholder: "ابحث عن وجهة...", searchBtn: "ابحث",
+                viewBtn: "عرض التفاصيل", footer: "وجهتي - جميع الحقوق محفوظة", actTitle: "🎯 الفعاليات والأنشطة:",
+                locTitle: "📍 الموقع:", mapsBtn: "عرض على الخريطة", allCat: "الكل", destSuffix: "وجهات"
+            },
+            en: {
+                title: "Wajhati - Your UAE Tourist Guide", logo: "Wajhati", home: "Home", destinations: "Destinations",
+                heroTitle: "Explore the Beauty of UAE", heroDesc: "Discover the finest tourist destinations in the United Arab Emirates",
+                allEmirates: "All Emirates", searchPlaceholder: "Search for a destination...", searchBtn: "Search",
+                viewBtn: "View Details", footer: "Wajhati - All Rights Reserved", actTitle: "🎯 Activities & Experiences:",
+                locTitle: "📍 Location:", mapsBtn: "View on Google Maps", allCat: "All", destSuffix: "Destinations"
+            }
+        };
+
+        // قاعدة البيانات الكاملة الشاملة لـ 70 وجهة (10 معالم لكل إمارة بالتساوي)
+        const destinationsData = [
+            // ==================== 1. أبوظبي / ABU DHABI ====================
+            {
+                id: 1, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🕌",
+                name: { ar: "جامع الشيخ زايد الكبير", en: "Sheikh Zayed Grand Mosque" },
+                desc: { ar: "تحفة معمارية إسلامية مهيبة من الرخام الأبيض النقي تزدان بأكبر سجادة يدوية وثريات مطلية بالذهب.", en: "An Islamic architectural masterpiece built from pure white marble, featuring the world's largest hand-knotted carpet." },
+                activities: { ar: ["المشاركة في جولات ثقافية مجانية", "التصوير المعماري الاحترافي", "تأمل فنون هندسة الخط العربي"], en: ["Join free guided cultural tours", "Professional architectural photography", "Admire intricate Arabic calligraphy designs"] },
+                location: { ar: "شارع الشيخ رشيد بن سعيد، أبوظبي", en: "Sheikh Rashid Bin Saeed St, Abu Dhabi" }, maps: "https://maps.google.com/?q=Sheikh+Zayed+Grand+Mosque"
+            },
+            {
+                id: 2, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🏛️",
+                name: { ar: "متحف اللوفر أبوظبي", en: "Louvre Abu Dhabi" },
+                desc: { ar: "متحف عالمي يربط بين الثقافات، يتميز بقبته الفولاذية الهائلة وتأثير 'مطر النور' البصري الخلاب.", en: "A global museum bridging world cultures, famous for its massive floating dome and 'rain of light' effect." },
+                activities: { ar: ["مشاهدة القطع الفنية والتاريخية النادرة", "جولة الكاياك البحري حول قبة المتحف"], en: ["View rare historical artifacts and masterpieces", "Take a night kayaking tour around the museum dome"] },
+                location: { ar: "المنطقة الثقافية، جزيرة السعديات، أبوظبي", en: "Saadiyat Cultural District, Saadiyat Island, Abu Dhabi" }, maps: "https://maps.google.com/?q=Louvre+Abu+Dhabi"
+            },
+            {
+                id: 3, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🏎️",
+                name: { ar: "عالم فيراري أبوظبي", en: "Ferrari World Abu Dhabi" },
+                desc: { ar: "مدينة ملاهٍ مغطاة مستوحاة من سيارات فيراري، وتضم أسرع أفعوانية (رولركوستر) في العالم.", en: "A thrilling Ferrari-branded indoor theme park, home to the world's fastest roller coaster." },
+                activities: { ar: ["ركوب أفعوانية فورمولا روسا السريعة", "تجربة أجهزة محاكاة القيادة لسباقات F1"], en: ["Ride the Formula Rossa roller coaster", "Test your skills on advanced F1 simulators"] },
+                location: { ar: "جزيرة ياس، أبوظبي", en: "Yas Island, Abu Dhabi" }, maps: "https://maps.google.com/?q=Ferrari+World+Abu+Dhabi"
+            },
+            {
+                id: 4, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏰",
+                name: { ar: "قصر الحصن", en: "Qasr Al Hosn" },
+                desc: { ar: "أقدم بناء تاريخي في العاصمة أبوظبي، كان مقراً للحكم واليوم يروي قصة وتاريخ نهضة الإمارة.", en: "The oldest historical stone building in Abu Dhabi, formerly a royal palace and now a cultural heritage museum." },
+                activities: { ar: ["استكشاف البرج الرقابي القديم", "حضور ورش الحرف التقليدية والتراثية"], en: ["Explore the ancient watchtower", "Attend traditional Emirati handicraft workshops"] },
+                location: { ar: "شارع الشيخ زايد الأول، أبوظبي", en: "Sheikh Zayed First St, Abu Dhabi" }, maps: "https://maps.google.com/?q=Qasr+Al+Hosn"
+            },
+            {
+                id: 5, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🌳",
+                name: { ar: "منتزه قرم الجبيل", en: "Jubail Mangrove Park" },
+                desc: { ar: "وجهة بيئية هادئة تمتاز بممرات خشبية تمتد وسط أشجار القرم الكثيفة والمياه البحرية الصافية.", en: "A tranquil eco-tourism destination featuring winding boardwalks through lush mangrove forests." },
+                activities: { ar: ["المشي والاسترخاء على الممرات الخشبية", "رصد الطيور المهاجرة والحياة البحرية"], en: ["Walk and relax along the floating boardwalks", "Spot migratory birds, crabs, and marine life"] },
+                location: { ar: "جزيرة الجبيل، أبوظبي", en: "Jubail Island, Abu Dhabi" }, maps: "https://maps.google.com/?q=Jubail+Mangrove+Park"
+            },
+            {
+                id: 6, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "👑",
+                name: { ar: "قصر الوطن", en: "Qasr Al Watan" },
+                desc: { ar: "قصر رئاسي ثقافي يفتح أبوابه للجمهور لاستكشاف التراث المعرفي والهندسي العريق لدولة الإمارات.", en: "An operating presidential palace that invites visitors to explore UAE's rich cultural heritage and design." },
+                activities: { ar: ["زيارة المكتبة الكبرى داخل القصر", "مشاهدة العرض الضوئي والصوتي المسائي"], en: ["Visit the grand Qasr Al Watan Library", "Watch the spectacular evening light and sound show"] },
+                location: { ar: "منطقة الرأس، أبوظبي", en: "Al Ras, Abu Dhabi" }, maps: "https://maps.google.com/?q=Qasr+Al+Watan"
+            },
+            {
+                id: 7, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🌊",
+                name: { ar: "حديقة وادي أدفنتشر", en: "Al Ain Adventure" },
+                desc: { ar: "أول منشأة في المنطقة من صنع الإنسان لممارسة التجديف بالكاياك وركوب الأمواج والرافتينج الجريء.", en: "The region's first man-made facility for whitewater rafting, kayaking, and surfing." },
+                activities: { ar: ["التجديف في المياه البيضاء الهائجة", "تحدي مسارات الحبال والتسلق المرتفع"], en: ["Whitewater rafting and kayaking", "Challenge yourself on the high ropes course"] },
+                location: { ar: "عين الفايضة، مدينة العين، أبوظبي", en: "Ain Al Faydah, Al Ain, Abu Dhabi" }, maps: "https://maps.google.com/?q=Al+Ain+Adventure"
+            },
+            {
+                id: 8, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🌴",
+                name: { ar: "واحة العين", en: "Al Ain Oasis" },
+                desc: { ar: "موقع مدرج على لائحة اليونسكو للتراث العالمي، يضم آلاف أشجار النخيل المروية بنظام الأفلاج القديم.", en: "A UNESCO World Heritage site filled with thousands of date palms fed by the traditional Falaj irrigation." },
+                activities: { ar: ["استئجار الدراجات والتجول بين النخيل", "التعرف على هندسة نظام الري التراثي"], en: ["Rent a bicycle to tour the shaded paths", "Learn about the ancient Falaj watering system"] },
+                location: { ar: "وسط مدينة العين، أبوظبي", en: "Central Al Ain, Abu Dhabi" }, maps: "https://maps.google.com/?q=Al+Ain+Oasis"
+            },
+            {
+                id: 9, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ السعديات", en: "Saadiyat Beach" },
+                desc: { ar: "شاطئ رملي طبيعي خلاب ذو مياه فيروزية ساحرة، ويعد محمية طبيعية لسلاحف صقرية المنقار.", en: "A stunning natural white-sand beach with turquoise waters, protecting hawksbill turtle nests." },
+                activities: { ar: ["السباحة والاسترخاء الشاطئي المريح", "ممارسة رياضة اليوجا أمام البحر الصافي"], en: ["Swimming and premium beach relaxation", "Practicing yoga in front of the serene open sea"] },
+                location: { ar: "جزيرة السعديات، أبوظبي", en: "Saadiyat Island, Abu Dhabi" }, maps: "https://maps.google.com/?q=Saadiyat+Beach"
+            },
+            {
+                id: 10, emirate: { ar: "أبوظبي", en: "Abu Dhabi" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🎢",
+                name: { ar: "عالم وارنر براذرز أبوظبي", en: "Warner Bros. World Abu Dhabi" },
+                desc: { ar: "أكبر مدينة ترفيهية مغلقة بالكامل في العالم تجمع أشهر شخصيات الأنيميشن والدي سي كومكس.", en: "The world's largest fully indoor theme park featuring iconic DC Comics and animation characters." },
+                activities: { ar: ["ركوب الألعاب الحماسية والمثيرة", "التقاط الصور مع باتمان وشخصيات لوني تونز"], en: ["Ride immersive, high-tech indoor coasters", "Meet and take photos with Batman and Looney Tunes"] },
+                location: { ar: "جزيرة ياس، أبوظبي", en: "Yas Island, Abu Dhabi" }, maps: "https://maps.google.com/?q=Warner+Bros.+World+Abu+Dhabi"
+            },
+
+            // ==================== 2. دبي / DUBAI ====================
+            {
+                id: 11, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏙️",
+                name: { ar: "برج خليفة", en: "Burj Khalifa" },
+                desc: { ar: "أطول ناطحة سحاب وهيكل بنائي مستقل في العالم بارتفاع شاهق يصل إلى 828 متراً.", en: "The tallest skyscraper and independent man-made structure in the world, rising 828 meters." },
+                activities: { ar: ["الصعود لمنصات المشاهدة العليا 'قمة البرج'", "تأمل المشهد البانورامي الشامل لمدينة دبي"], en: ["Ascend to 'At the Top' observation decks", "Enjoy panoramic, breathtaking views of the city skyline"] },
+                location: { ar: "وسط مدينة دبي، بالقرب من دبي مول", en: "Downtown Dubai, near Dubai Mall" }, maps: "https://maps.google.com/?q=Burj+Khalifa"
+            },
+            {
+                id: 12, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🔮",
+                name: { ar: "متحف المستقبل", en: "Museum of the Future" },
+                desc: { ar: "أيقونة معمارية وهندسية فريدة مغطاة بالكامل باقتباسات رائعة من الخط العربي التراثي.", en: "An architectural icon and engineering marvel covered with beautiful Arabic calligraphy quotes." },
+                activities: { ar: ["رحلة تفاعلية غامرة لاستكشاف تقنيات المستقبل", "التقاط صور تذكارية من الشرفة الوسطى المفتوحة"], en: ["Take an interactive journey to look at tomorrow's tech", "Capture memorable photos from the central viewing deck"] },
+                location: { ar: "شارع الشيخ زايد، دبي", en: "Sheikh Zayed Road, Dubai" }, maps: "https://maps.google.com/?q=Museum+of+the+Future"
+            },
+            {
+                id: 13, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🌊",
+                name: { ar: "حديقة أتلانتس أكوافنتشر", en: "Atlantis Aquaventure Waterpark" },
+                desc: { ar: "أكبر حديقة مائية في العالم، تقدم منزلقات مرعبة ومغامرات مائية لا تُنسى لجميع الأعمار.", en: "The world's largest waterpark, offering record-breaking water slides and marine adventures." },
+                activities: { ar: ["تجربة منزلق قفزة الثقة عبر حوض القروش", "الاسترخاء واللعب على الشاطئ الخاص الطويل"], en: ["Slide through a shark lagoon via the Leap of Faith", "Relax and play along the extensive private beach"] },
+                location: { ar: "منتجع أتلانتس، نخلة جميرا، دبي", en: "Atlantis The Palm, Palm Jumeirah, Dubai" }, maps: "https://maps.google.com/?q=Atlantis+Aquaventure+Waterpark"
+            },
+            {
+                id: 14, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🛶",
+                name: { ar: "حي الفهيدي التاريخي", en: "Al Fahidi Historical Neighbourhood" },
+                desc: { ar: "حي تراثي يعود للقرن الـ19 يعرض نمط العمارة التقليدي بأبراجه الهوائية (البراجيل) وممراته الضيقة.", en: "A 19th-century heritage district showcasing traditional wind-tower architecture and narrow alleys." },
+                activities: { ar: ["التجول في السكيك والممرات الضيقة القديمة", "زيارة المقاهي التراثية والمعارض الفنية الصغيرة"], en: ["Stroll through the historic pathways and alleys", "Visit heritage cafes and intimate art galleries"] },
+                location: { ar: "منطقة بر دبي، بجانب خور دبي", en: "Bur Dubai, next to Dubai Creek" }, maps: "https://maps.google.com/?q=Al+Fahidi+Historical"
+            },
+            {
+                id: 15, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🌸",
+                name: { ar: "حديقة الزهور بدبي", en: "Dubai Miracle Garden" },
+                desc: { ar: "أكبر حديقة زهور طبيعية في العالم تضم ملايين الزهور المصممة على هيئة مجسمات مذهلة وطائرات.", en: "The world's largest natural flower garden, showcasing millions of flowers in stunning 3D structures." },
+                activities: { ar: ["المشي في ممر القلوب المزين بالورود", "مشاهدة مجسم طائرة الإمارات المكسو بالزهور"], en: ["Walk through the romantic heart-shaped floral arches", "See the record-breaking Emirates A380 flower structure"] },
+                location: { ar: "جنوب البرشاء، دبي", en: "Al Barsha South, Dubai" }, maps: "https://maps.google.com/?q=Dubai+Miracle+Garden"
+            },
+            {
+                id: 16, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "⛷️",
+                name: { ar: "سكي دبي", en: "Ski Dubai" },
+                desc: { ar: "منتجع تزلج داخلي مذهل مغطى بالثلوج الحقيقية طوال العام يقع في قلب أحد أكبر مراكز التسوق.", en: "An amazing indoor ski resort covered in real snow year-round, located inside a major mall." },
+                activities: { ar: ["التزلج المنحدر على الجليد الحقيقي", "لقاء وِدي مع طيور البطريق الثلجية اللطيفة"], en: ["Ski and snowboard down the indoor slopes", "Enjoy an interactive encounter with resident penguins"] },
+                location: { ar: "مول الإمارات، شارع Sheikh Zayed، دبي", en: "Mall of the Emirates, Sheikh Zayed Rd, Dubai" }, maps: "https://maps.google.com/?q=Ski+Dubai"
+            },
+            {
+                id: 17, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🐪",
+                name: { ar: "محمية دبي الصحراوية", en: "Dubai Desert Conservation Reserve" },
+                desc: { ar: "أول محمية طبيعية وطنية لحماية البيئة البرية الصحراوية النادرة والحيوانات الفطرية المهددة.", en: "The UAE's first national park dedicated to preserving the delicate and rare desert ecosystem." },
+                activities: { ar: ["رحلات السفاري بالسيارات رباعية الدفع", "رصد المها العربي والغزلان البرية في الصحراء"], en: ["Guided 4x4 desert safari drives", "Spot free-roaming Arabian Oryx and sand gazelles"] },
+                location: { ar: "طريق دبي العين، دبي", en: "Dubai-Al Ain Road, Dubai" }, maps: "https://maps.google.com/?q=Dubai+Desert+Conservation+Reserve"
+            },
+            {
+                id: 18, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🖼️",
+                name: { ar: "برواز دبي", en: "The Dubai Frame" },
+                desc: { ar: "أكبر إطار صورة في العالم يقدم إطلالات فريدة تربط وتوازن بين دبي القديمة ودبي الحديثة المعاصرة.", en: "The largest picture frame on earth, offering sweeping views of both old and new modern Dubai." },
+                activities: { ar: ["المشي على الممر الزجاجي الشفاف العلوي", "استكشاف معرض تاريخ تطور إمارة دبي"], en: ["Walk safely across the high transparent glass floor", "Explore the interactive museum of Dubai's history"] },
+                location: { ar: "حديقة زعبيل، دبي", en: "Zabeel Park, Dubai" }, maps: "https://maps.google.com/?q=The+Dubai+Frame"
+            },
+            {
+                id: 19, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ كايت بيتش", en: "Kite Beach" },
+                desc: { ar: "شاطئ عام ينبض بالحيوية والنشاط، مفضل جداً لعشاق الرياضات المائية الممتعة والمأكولات السريعة.", en: "A vibrant, popular public beach famous for kitesurfing, water sports, and food trucks." },
+                activities: { ar: ["ممارسة ركوب الأمواج بالطائرات الورقية", "الجري على المسار المخصص أو لعب الكرة الشاطئية"], en: ["Go kitesurfing and paddleboarding", "Jog on the dedicated track or play beach volleyball"] },
+                location: { ar: "منطقة جميرا 3، دبي", en: "Jumeirah 3, Dubai" }, maps: "https://maps.google.com/?q=Kite+Beach+Dubai"
+            },
+            {
+                id: 20, emirate: { ar: "دبي", en: "Dubai" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🎡",
+                name: { ar: "القرية العالمية", en: "Global Village" },
+                desc: { ar: "وجهة ثقافية وترفيهية موسمية تجمع أجنحة لعشرات الدول تستعرض فيها حضاراتها ومنتجاتها.", en: "A seasonal multi-cultural festival park showcasing cultures, food, and shopping from around the world." },
+                activities: { ar: ["تذوق الأطعمة العالمية المتنوعة الشهية", "شراء المنتجات التقليدية وحضور العروض المسرحية"], en: ["Sample delicious international street food", "Shop for cultural crafts and watch live stage shows"] },
+                location: { ar: "شارع الشيخ محمد بن زايد، دبي", en: "Sheikh Mohammed Bin Zayed Road, Dubai" }, maps: "https://maps.google.com/?q=Global+Village+Dubai"
+            },
+
+            // ==================== 3. الشارقة / SHARJAH ====================
+            {
+                id: 21, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "📖",
+                name: { ar: "بيت الحكمة", en: "House of Wisdom" },
+                desc: { ar: "مركز ثقافي ومكتبة عصرية مبتكرة تمزج ببراعة فائقة بين طلب المعرفة والتفاعل الاجتماعي اللطيف.", en: "A futuristic cultural hub and smart library reimagined for learning and social design." },
+                activities: { ar: ["القراءة الهادئة في حدائق النخيل الخلابة", "مشاهدة نصب التمرير التذكاري المرتفع"], en: ["Read books quietly in manicured palm gardens", "View the iconic, towering Scroll monument outside"] },
+                location: { ar: "شارع المطار، الشارقة", en: "Airport Road, Sharjah" }, maps: "https://maps.google.com/?q=House+of+Wisdom+Sharjah"
+            },
+            {
+                id: 22, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "✨",
+                name: { ar: "متحف الشارقة للحضارة الإسلامية", en: "Sharjah Museum of Islamic Civilization" },
+                desc: { ar: "متحف فريد يقع في سوق تاريخي، يعرض آلاف القطع الأثرية النادرة والإنجازات العلمية الإسلامية.", en: "A unique museum housing thousands of rare Islamic artifacts, scientific tools, and artworks." },
+                activities: { ar: ["رؤية المخطوطات والعملات الإسلامية القديمة", "تأمل قبة البروج الفلكية الذهبية الرائعة"], en: ["Examine ancient Islamic manuscripts and coins", "Admire the stunning golden zodiac dome interior"] },
+                location: { ar: "منطقة المجرة، قلب الشارقة", en: "Al Majarrah area, Heart of Sharjah, Sharjah" }, maps: "https://maps.google.com/?q=Sharjah+Museum+of+Islamic+Civilization"
+            },
+            {
+                id: 23, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🦋",
+                name: { ar: "جزيرة النور", en: "Al Noor Island" },
+                desc: { ar: "واحة فنية خضراء في بحيرة خالد، تضم بيت الفراشات الشهير ومجسمات فنية لافتة للنظر.", en: "A peaceful lagoon island oasis blending nature, architecture, and contemporary art installations." },
+                activities: { ar: ["التجول في بيت الفراشات الاستوائي المغطى", "المشي ليلاً وسط الأضواء السحرية المتغيرة"], en: ["Tour the indoor tropical Butterfly House", "Stroll among luminous light installations at night"] },
+                location: { ar: "بحيرة خالد، الشارقة", en: "Khaled Lagoon, Sharjah" }, maps: "https://maps.google.com/?q=Al+Noor+Island"
+            },
+            {
+                id: 24, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🌊",
+                name: { ar: "واجهة المجاز المائية", en: "Al Majاز Waterfront" },
+                desc: { ar: "وجهة عائلية حيوية ممتازة تمتاز بإطلالات خلابة على البحيرة وتضم نافورة الشارقة الموسيقية الكبرى.", en: "A bustling premier family waterfront park with fine restaurants and an active musical fountain." },
+                activities: { ar: ["مشاهدة عروض النافورة الموسيقية الرائعة", "استئجار القوارب الصديقة للبيئة في البحيرة"], en: ["Watch spectacular musical fountain shows", "Rent eco-friendly boats for a cruise in the lagoon"] },
+                location: { ar: "شارع كورنيش خالد، الشارقة", en: "Khaled Corniche St, Sharjah" }, maps: "https://maps.google.com/?q=Al+Majaz+Waterfront"
+            },
+            {
+                id: 25, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🦌",
+                name: { ar: "مركز واسط للأراضي الرطبة", en: "Wasit Wetland Centre" },
+                desc: { ar: "محمية طبيعية ممتازة كانت في السابق مكباً للنفايات وتحولت لواحة مذهلة تأوي مئات الطيور المهاجرة.", en: "A vibrant nature reserve and sanctuary providing a safe haven for hundreds of wild migratory birds." },
+                activities: { ar: ["رصد وتصوير الطيور النادرة من غرف زجاجية", "التجول بالعربات الكهربائية الصديقة للبيئة"], en: ["Watch and shoot rare birds from glass hides", "Tour the vast wetland sanctuary via electric buggies"] },
+                location: { ar: "منطقة واسط، الشارقة", en: "Wasit area, Sharjah" }, maps: "https://maps.google.com/?q=Wasit+Wetland+Centre"
+            },
+            {
+                id: 26, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏛️",
+                name: { ar: "قلب الشارقة", en: "Heart of Sharjah" },
+                desc: { ar: "أكبر مشروع ترميم تراثي في المنطقة، يهدف لإعادة إحياء وترميم الحي القديم بأسواقه ومبانيه التراثية.", en: "The largest historical preservation project in the region, restoring the old heritage merchant town." },
+                activities: { ar: ["الشراء من سوق العرصة التراثي القديم", "زيارة المتاحف التراثية والبيوت المرممة"], en: ["Shop for local items in Souq Al Arsa", "Visit historic homes and localized traditional museums"] },
+                location: { ar: "منطقة الكورنيش، الشارقة", en: "Corniche Area, Sharjah" }, maps: "https://maps.google.com/?q=Heart+of+Sharjah"
+            },
+            {
+                id: 27, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏔️",
+                name: { ar: "استراحة السحب بخورفكان", en: "Al Suhub Rest Area" },
+                desc: { ar: "وجهة جبلية شاهقة ترتفع حوالي 580 متراً عن سطح البحر، وتوفر إطلالة بانورامية ساحرة لمدينة خورفكان وعُمان.", en: "A spectacular mountain-side vantage point sitting 580m above sea level, offering panoramic sea views." },
+                activities: { ar: ["الاستمتاع بالطقس العليل البارد فوق الغيم", "تناول وجبة شهية في المطعم البانورامي الدائري"], en: ["Enjoy the refreshing cool weather above clouds", "Dine in the modern circular panoramic restaurant"] },
+                location: { ar: "مدينة خورفكان، المنطقة الشرقية، الشارقة", en: "Khorfakkan, Eastern Region, Sharjah" }, maps: "https://maps.google.com/?q=Al+Suhub+Rest+Area"
+            },
+            {
+                id: 28, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🚗",
+                name: { ar: "متحف الشارقة للسيارات القديمة", en: "Sharjah Old Cars Museum" },
+                desc: { ar: "الوجهة المثالية المفضلة لعشاق السيارات الكلاسيكية، يضم أكثر من مئة سيارة تاريخية قديمة نادرة وجاذبة.", en: "The perfect destination for classic car lovers, housing over 100 beautifully restored vintage vehicles." },
+                activities: { ar: ["رؤية سيارات كلاسيكية تعود لبدايات القرن العشرين", "التقاط صور قريبة للمحركات والهياكل النادرة"], en: ["See antique cars dating back to the early 1900s", "Take close-up photos of unique manufacturing details"] },
+                location: { ar: "طريق مطار الشارقة الدولي، الشارقة", en: "Sharjah International Airport Road, Sharjah" }, maps: "https://maps.google.com/?q=Sharjah+Old+Cars+Museum"
+            },
+            {
+                id: 29, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🌧️",
+                name: { ar: "غرفة المطر", en: "Rain Room Sharjah" },
+                desc: { ar: "تجهيز فني تركيبي معاصر مذهل يتيح لك المشي وسط انهمار المطر الغزير دون أن تبتل قطرة واحدة بفضل المستشعرات الحركية.", en: "An artistic installation allowing you to walk through continuous heavy rain without getting wet." },
+                activities: { ar: ["المشي الاستعراضي البطيء وسط تساقط المطر", "التقاط صور خيالية بظلال النور الفريدة"], en: ["Walk slowly beneath the smart pouring rainfall", "Take artistic silhouette photos against the spotlight"] },
+                location: { ar: "منطقة المجرة، الشارقة", en: "Al Majarrah, Sharjah" }, maps: "https://maps.google.com/?q=Rain+Room+Sharjah"
+            },
+            {
+                id: 30, emirate: { ar: "الشارقة", en: "Sharjah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🎭",
+                name: { ar: "مدرج خورفكان", en: "Khorfakkan Amphitheatre" },
+                desc: { ar: "تحفة معمارية رائعة مبنية على الطراز الروماني الكلاسيكي العريق مدمجاً بجمال وثقافة العمارة الإسلامية.", en: "An architectural wonder designed in classic Roman style blended seamlessly with Islamic details." },
+                activities: { ar: ["حضور الحفلات والفعاليات الفنية والمسرحية", "زيارة الشلال الاصطناعي الجبلي المهيب المجاور"], en: ["Attend live music and theatrical performances", "Visit the majestic, adjacent man-made cave waterfall"] },
+                location: { ar: "كورنيش خورفكان، الشارقة", en: "Khorfakkan Corniche, Sharjah" }, maps: "https://maps.google.com/?q=Khorfakkan+Amphitheatre"
+            },
+
+            // ==================== 4. عجمان / AJMAN ====================
+            {
+                id: 31, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🏰",
+                name: { ar: "متحف عجمان", en: "Ajman Museum" },
+                desc: { ar: "حصن أثري عريق يعود للقرن الثامن عشر يستعرض تاريخ الأجداد والصناعات التقليدية المحلية والمهن القديمة.", en: "An 18th-century historical fort displaying Emirati heritage, archaeological finds, and old trades." },
+                activities: { ar: ["مشاهدة الأزياء والأسلحة الإماراتية الأثرية النادرة", "التعرف على نمط المعيشة قبل النفط في الغرف التراثية"], en: ["View historical Emirati weaponry and costumes", "Learn about pre-oil coastal life through realistic exhibits"] },
+                location: { ar: "منطقة البستان، عجمان", en: "Al Bustan, Ajman" }, maps: "https://maps.google.com/?q=Ajman+Museum"
+            },
+            {
+                id: 32, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🛶",
+                name: { ar: "محمية الزوراء الطبيعية", en: "Al Zorah Nature Reserve" },
+                desc: { ar: "منظومة بيئية بكر ساحرة تمتد وسط غابات أشجار القرم الشاسعة والمياه الهادئة، ملجأ رائع للطيور.", en: "A pristine marine ecosystem and eco-destination nestled within expansive mangrove forests." },
+                activities: { ar: ["التجديف بالكاياك البحري بين ممرات أشجار القرم", "رصد ومراقبة طيور الفلامنجو (الفنتير) الوردية الجذابة"], en: ["Go kayaking through the calm mangrove channels", "Spot elegant pink flamingos and other marine bird life"] },
+                location: { ar: "منطقة الزوراء، شمال عجمان", en: "Al Zorah, Ajman" }, maps: "https://maps.google.com/?q=Al+Zorah+Nature+Reserve"
+            },
+            {
+                id: 33, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "كورنيش عجمان", en: "Ajman Corniche" },
+                desc: { ar: "ممشى ساحلي ممتد على مسافة 4 كيلومترات، يمثل شريان الحياة والترفيه العائلي الأبرز في إمارة عجمان.", en: "A beautiful 4-kilometer waterfront esplanade offering dynamic spaces for families and cafes." },
+                activities: { ar: ["المشي وممارسة الجري وركوب الدراجات الهوائية", "الاستمتاع بتناول الوجبات الشهية أمام البحر مباشرة"], en: ["Stroll, jog, or bicycle along the paved shore path", "Dine at seaside casual and fine-dining establishments"] },
+                location: { ar: "شارع الكورنيش, عجمان", en: "Corniche Road, Ajman" }, maps: "https://maps.google.com/?q=Ajman+Corniche"
+            },
+            {
+                id: 34, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏰",
+                name: { ar: "قلعة مصفوت", en: "Masfout Castle" },
+                desc: { ar: "قلعة تاريخية قديمة مبنية من الطين والحجارة، تقع على قمة جبلية شاهقة لحماية المنطقة من قطاع الطرق.", en: "A historic hilltop fortress built from mud and stone, originally protecting the agricultural enclave." },
+                activities: { ar: ["المشي الجبلي السريع للوصول إلى القلعة الأثرية", "تأمل الإطلالة الطبيعية الرائعة لسلسلة جبال الحجر"], en: ["Hike up the rocky trail leading to the fortress", "Enjoy breathtaking panoramic views of the Hajar mountains"] },
+                location: { ar: "منطقة مصفوت الجبلية، عجمان", en: "Masfout Mountain Region, Ajman" }, maps: "https://maps.google.com/?q=Masfout+Castle"
+            },
+            {
+                id: 35, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏞️",
+                name: { ar: "حديقة حليفة", en: "Helio Park" },
+                desc: { ar: "من أروع الحدائق العامة العائلية في عجمان، تمتاز بمساحاتها العشبية الخضراء الفسيحة والمنظمة وألعابها المتنوعة.", en: "One of the most family-friendly public parks in Ajman, featuring expansive manicured lawns." },
+                activities: { ar: ["إقامة حفلات الشواء العائلية في الهواء الطلق", "ركوب الدراجات العائلية والألعاب الترفيهية للأطفال"], en: ["Have a family barbecue picnic in open clean spaces", "Rent family bikes and enjoy dedicated kid play zones"] },
+                location: { ar: "منطقة الحميدية، عجمان", en: "Al Hamidiyah, Ajman" }, maps: "https://maps.google.com/?q=Helio+Park+Ajman"
+            },
+            {
+                id: 36, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🛍️",
+                name: { ar: "السوق الصيني عجمان", en: "Ajman China Mall" },
+                desc: { ar: "مركز تجاري وتسوق ضخم وشائع جداً يوفر خيارات شرائية هائلة من البضائع الصينية المتنوعة بأسعار منافسة.", en: "A massive, popular commercial shopping hub offering an extensive variety of Chinese products." },
+                activities: { ar: ["التسوق وشراء الملابس والإلكترونيات بأسعار الجملة", "تجربة تذوق الأطعمة والحلويات الصينية التقليدية السريعة"], en: ["Shop for affordable apparel, housewares, and electronics", "Sample authentic quick Asian dishes in the food court"] },
+                location: { ar: "المنطقة الصناعية، عجمان", en: "Ajman Industrial Area, Ajman" }, maps: "https://maps.google.com/?q=Ajman+China+Mall"
+            },
+            {
+                id: 37, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🗼",
+                name: { ar: "برج المربعة", en: "Al Murabaa Watchtower" },
+                desc: { ar: "برج مراقبة ودفاع بحري تاريخي يقع على ساحل بحر عجمان، ويمثل رمزاً عريقاً للهوية التراثية للإمارة.", en: "A historic coastal defensive watchtower standing proudly on the Ajman sea front." },
+                activities: { ar: ["التقاط صور فوتوغرافية تذكارية جميلة للبرج الأثري", "المشي في الساحة البحرية الثقافية المحيطة به"], en: ["Take striking photos of the vintage watchtower", "Stroll along the pedestrian seaside cultural plaza"] },
+                location: { ar: "شارع الكورنيش، عجمان", en: "Corniche Road, Ajman" }, maps: "https://maps.google.com/?q=Al+Murabaa+Watchtower"
+            },
+            {
+                id: 38, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🌳",
+                name: { ar: "حديقة مشيرف للسيدات", en: "Mushairef Ladies Park" },
+                desc: { ar: "حديقة هادئة مخصصة بالكامل وبخصوصية تامة للسيدات والأطفال، توفر مسارات مشي ممتازة وسط بيئة خضراء مريحة.", en: "A peaceful green park reserved exclusively for women and children, providing complete privacy." },
+                activities: { ar: ["ممارسة رياضة المشي والجري في أجواء آمنة وهادئة", "مشاركة الأطفال الألعاب الحركية المجانية المفتوحة"], en: ["Jog and walk in complete safety and tranquility", "Let children experience modern and safe outdoor playgrounds"] },
+                location: { ar: "منطقة مشيرف، عجمان", en: "Mushairef, Ajman" }, maps: "https://maps.google.com/?q=Mushairef+Ladies+Park"
+            },
+            {
+                id: 39, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏔️",
+                name: { ar: "وديان منطقة المنامة", en: "Al Manama Valleys" },
+                desc: { ar: "منطقة سهلية تابعة لعجمان تمتاز بطبيعتها الساحرة وجريان وديانها الخصبة بالماء العذب عقب هطول الأمطار الخيرية.", en: "An inland enclave of Ajman known for fertile plains and scenic valleys flowing after rainfall." },
+                activities: { ar: ["التخييم البري الممتع وسط الطبيعة الجبلية الساحلية", "استكشاف المزارع المحلية القديمة وإنتاج التمور"], en: ["Go desert camping near majestic mountain backdrops", "Explore local heritage farms and date production"] },
+                location: { ar: "منطقة المنامة، شرق عجمان", en: "Al Manama Enclave, Ajman" }, maps: "https://maps.google.com/?q=Al+Manama+Ajman"
+            },
+            {
+                id: 40, emirate: { ar: "عجمان", en: "Ajman" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🛍️",
+                name: { ar: "سوق صالح التراثي", en: "Souq Saleh" },
+                desc: { ar: "سوق شعبى قديم مسقوف بألواح الخشب الساحرة، مشهور جداً بتجارة وتفصيل الأقمشة والملابس الإماراتية التقليدية والعبايات.", en: "A historic traditional market with wooden roofs, famous for traditional Emirati textiles." },
+                activities: { ar: ["التسوق واقتناء المخاوير والعبايات المطرزة اليدوية", "التجول واستنشاق روائح البخور واللبان العربي في السوق"], en: ["Shop for customized traditional embroidered gowns", "Stroll through alleys rich with scents of Arabic oud and incense"] },
+                location: { ar: "المنطقة التراثية، النخيل، عجمان", en: "Heritage District, Al Nakheel, Ajman" }, maps: "https://maps.google.com/?q=Souq+Saleh+Ajman"
+            },
+
+            // ==================== 5. أم القيوين / UMM AL QUWAIN ====================
+            {
+                id: 41, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏝️",
+                name: { ar: "جزيرة السينية", en: "Al Sinniyah Island" },
+                desc: { ar: "أكبر الجزر السياحية الطبيعية في أم القيوين، تعد محمية بيئية غنية بأشجار القرم الكثيفة وتأوي أسراب طيور الغاق.", en: "The largest natural island in UAQ, serving as a pristine marine bird and mangrove sanctuary." },
+                activities: { ar: ["القيام بجولات بحرية بالقارب حول المحمية الطبيعية", "رصد ومراقبة طيور الغاق السقطرية والغزلان البرية اللطيفة"], en: ["Take scenic boat tours around the natural sanctuary", "Spot unique Socotra cormorants and wild gazelles"] },
+                location: { ar: "قبالة ساحل مدينة أم القيوين القديمة", en: "Off the coast of old Umm Al Quwain city" }, maps: "https://maps.google.com/?q=Al+Sinniyah+Island"
+            },
+            {
+                id: 42, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🌊",
+                name: { ar: "حديقة دريم لاند المائية", en: "Dreamland Aqua Park" },
+                desc: { ar: "واحدة من أقدم وأكبر الحدائق المائية الترفيهية في دولة الإمارات، وتوفر ألعاباً مائية كلاسيكية رائعة ومساحات تخييم مريحة.", en: "One of the UAE's largest and most enduring family waterparks with thrilling aquatic slides." },
+                activities: { ar: ["تجربة منزلقات الكاميكازي المائية السريعة المثيرة", "التخييم الليلي المنظم في الأكواخ الخشبية المخصصة"], en: ["Ride the high-speed Kamikaze water slides", "Enjoy overnight stays in unique organized rental tents and chalets"] },
+                location: { ar: "شارع الاتحاد، أم القيوين", en: "Al Ittihad Road, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Dreamland+Aqua+Park"
+            },
+            {
+                id: 43, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🏰",
+                name: { ar: "متحف أم القيوين الوطني", en: "Umm Al Quwain National Museum" },
+                desc: { ar: "يقع في حصن أم القيوين التاريخي القديم، ويعرض مقتنيات أثرية هامة تم اكتشافها في موقعي الدور وتل الأبرق الأثريين.", en: "Housed in the historic UAQ Fort, displaying ancient relics excavated from Ed-Dur and Tell Abraq." },
+                activities: { ar: ["مشاهدة الأسلحة القديمة والمخطوطات والحلي الأثرية", "استكشاف أبراج الحصن الدفاعية والمدفعية التراثية"], en: ["View ancient weapons, pottery, and historic jewelry", "Explore the fort's defense towers and old cannons"] },
+                location: { ar: "منطقة اللذّة، أم القيوين القديمة", en: "Al Lazima area, Old Umm Al Quwain" }, maps: "https://maps.google.com/?q=Umm+Al+Quwain+National+Museum"
+            },
+            {
+                id: 44, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ أم القيوين لأشجار القرم", en: "Umm Al Quwain Mangrove Beach" },
+                desc: { ar: "وجهة سياحة عامة بيئية ومبتكرة تتيح للزوار التخييم والاستمتاع بجمال البحر وغابات أشجار القرم الكثيفة.", en: "An eco-friendly public beach development allowing families to camp directly near lush mangrove formations." },
+                activities: { ar: ["التخييم العائلي المباشر والشواء فوق الرمال الناعمة", "ممارسة رياضة التجديف (البادل بورد) وسط الطبيعة"], en: ["Family beachfront camping and pristine barbecues", "Practice stand-up paddleboarding near the mangroves"] },
+                location: { ar: "منطقة خور اليفرة، أم القيوين", en: "Khor Al Yeefrah, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Umm+Al+Quwain+Mangrove+Beach"
+            },
+            {
+                id: 45, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏛️",
+                name: { ar: "موقع الدور الأثري", en: "Ed-Dur Archaeological Site" },
+                desc: { ar: "أحد أكبر المواقع الأثرية المحلية في الدولة، يعود لتاريخ القرن الأول والثاني ميلادي ويضم بقايا معبد إله الشمس القديم.", en: "One of the most significant archaeological sites in the UAE, featuring a 1st-century sun-deity temple." },
+                activities: { ar: ["استكشاف بقايا القلاع الحجرية والمقابر التاريخية القديمة", "التعرف على تاريخ تجارة التوابل والعملات الرومانية القديمة"], en: ["Explore remains of stone forts and single tombs", "Learn about the ancient maritime incense and spice trade"] },
+                location: { ar: "شارع الاتحاد، مقابل حديقة دريم لاند، أم القيوين", en: "Al Ittihad Road, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Ed-Dur+Archaeological+Site"
+            },
+            {
+                id: 46, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🪁",
+                name: { ar: "شاطئ كايت بيتش أم القيوين", en: "Kite Beach Umm Al Quwain" },
+                desc: { ar: "مركز وشاطئ عصري فريد وعصري يجمع بين الرياضات المائية والجلسات الشاطئية الأنيقة المصنوعة من مواد خشبية طبيعية.", en: "A trendy beachfront hub blending watersports with stylish, eco-conscious wooden seating." },
+                activities: { ar: ["ركوب الأمواج والتجديف والأنشطة المائية المتنوعة", "الاسترخاء في الكبائن الشاطئية وتناول القهوة المميزة المريحة"], en: ["Go kitesurfing, kayaking, and outdoor water activities", "Relax in open beach huts and enjoy specialty coffee treats"] },
+                location: { ar: "شارع الشيخ سعود بن راشد المعلا، أم القيوين", en: "Sheikh Saud Bin Rashid Al Mualla St, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Kite+Beach+Umm+Al+Quwain"
+            },
+            {
+                id: 47, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🎯",
+                name: { ar: "نادي أم القيوين للموتور والرمي", en: "Umm Al Quwain Marine Club" },
+                desc: { ar: "مركز متميز ومثالي لممارسة الأنشطة الترفيهية العائلية والرياضات المائية وركوب الخيل والرماية بالبنادق.", en: "A premium club offering exciting water sports, horse riding, and shooting experiences." },
+                activities: { ar: ["ممارسة رياضة الرماية بالبندقية أو ركوب الخيل التراثي", "تأجير الزوارق السريعة والقيام برحلات صيد بحرية ممتعة"], en: ["Practice target shooting or traditional horse riding", "Rent speedboats and arrange deep-sea fishing trips"] },
+                location: { ar: "منطقة الخور، أم القيوين", en: "Al Khor area, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Umm+Al+Quwain+Marine+Club"
+            },
+            {
+                id: 48, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏞️",
+                name: { ar: "حديقة الشيخ زايد بن سلطان آل نهيان", en: "Sheikh Zayed Park UAQ" },
+                desc: { ar: "أبرز وأكبر حديقة عامة ترفيهية في أم القيوين، تمتاز بتصميمها الجميل والمسارات الرياضية الآمنة للأطفال.", en: "The main and largest public family park in UAQ, featuring green lawns and walking tracks." },
+                activities: { ar: ["ممارسة رياضة المشي والجري في المسارات المخصصة", "مشاركة الأطفال الألعاب الحركية في المناطق المجانية"], en: ["Enjoy walking or jogging on designated rubber paths", "Let children experience modern and safe outdoor playgrounds"] },
+                location: { ar: "منطقة الحمرية، أم القيوين", en: "Al Humrah, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Sheikh+Zayed+Park+Umm+Al+Quwain"
+            },
+            {
+                id: 49, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🗼",
+                name: { ar: "أبراض فلج المعلا التاريخية", en: "Falaj Al Mualla Watchtowers" },
+                desc: { ar: "ثلاثة أبراج مراقبة دفاعية تاريخية شيدت في القرن التاسع عشر لحماية الواحة الزراعية الثرية والآبار العذبة.", en: "Three historic defensive watchtowers built in the 19th century to protect the fertile oasis." },
+                activities: { ar: ["استكشاف حصن فلج المعلا المرمم والجميل", "التجول في مزارع النخيل الخضراء المحيطة بالأبراج"], en: ["Explore the beautifully restored Falaj Al Mualla Fort", "Stroll through rich date-palm farms surrounding the towers"] },
+                location: { ar: "منطقة فلج المعلا، أم القيوين", en: "Falaj Al Mualla, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Falaj+Al+Mualla+Fort"
+            },
+            {
+                id: 50, emirate: { ar: "أم القيوين", en: "Umm Al Quwain" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🦀",
+                name: { ar: "شاطئ اللؤلؤ لرحلات صيد الكابوريا", en: "UAQ Crab Hunting Shore" },
+                desc: { ar: "منطقة بحرية ضحلة شهيرة جداً برحلات صيد الكابوريا (القبقب) الليلية التقليدية باستخدام المشاعل الضوئية.", en: "A famous shallow coastal flat renowned for night-time crab hunting excursions using torches." },
+                activities: { ar: ["المشاركة في رحلات صيد الكابوريا الليلية الضحلة", "تناول عشاء بحري طازج في المنتجعات الساحلية المجاورة"], en: ["Join exciting night-time wading crab hunting tours", "Enjoy a fresh seafood dinner at nearby beach resorts"] },
+                location: { ar: "منطقة جزر الخور الضحلة، أم القيوين", en: "Khor islands shallows, Umm Al Quwain" }, maps: "https://maps.google.com/?q=Crab+Hunting+Umm+Al+Quwain"
+            },
+
+            // ==================== 6. رأس الخيمة / RAS AL KHAIMAH ====================
+            {
+                id: 51, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "⛰️",
+                name: { ar: "جبل جيس", en: "Jebel Jais" },
+                desc: { ar: "أعلى قمة جبلية طبيعية في دولة الإمارات العربية المتحدة، تقدم مغامرات شيقة وإطلالات صخرية ساحرة فوق الغيم.", en: "The highest mountain peak in the UAE, offering extreme adventure and dramatic rocky vistas." },
+                activities: { ar: ["تجربة أطول مسار انزلاقي (زيبلاين) في العالم", "التخييم الجبلي البارد ومراقبة النجوم ليلاً وبوضوح"], en: ["Ride Jais Flight, the world's longest zipline", "Go mountain camping and enjoy clear-sky stargazing"] },
+                location: { ar: "سلسلة جبال الحجر، رأس الخيمة", en: "Hajar Mountain Range, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Jebel+Jais"
+            },
+            {
+                id: 52, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏰",
+                name: { ar: "قلعة ضاية", en: "Dhayah Fort" },
+                desc: { ar: "القلعة العسكرية الجبلية الوحيدة المتبقية في الدولة، مبنية من الطوب ومطلة بشكل ساحر على واحات النخيل والبحر.", en: "The only remaining hilltop defensive military fort in the UAE, overlooking date gardens." },
+                activities: { ar: ["صعود الدرج الحجري المؤدي لأعلى الحصن الأثري", "الاستمتاع بإطلالة شاملة مبهرة وممتدة بين الجبل والبحر"], en: ["Climb up the steep stone zigzag staircase to the fort", "Enjoy a breathtaking 360-degree view of palms and sea"] },
+                location: { ar: "منطقة الرمس، شمال رأس الخيمة", en: "Al Rams, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Dhayah+Fort"
+            },
+            {
+                id: 53, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🛖",
+                name: { ar: "الجزيرة الحمراء التراثية", en: "Al Jazirah Al Hamra Heritage Village" },
+                desc: { ar: "قرية صيد لؤلؤ تاريخية مهجورة ومحافظ عليها بالكامل، تعرض منازل مبنية من الأحجار المرجانية القديمة الأصيلة.", en: "An abandoned historic pearl-diving village showing coral-stone homes and mosques." },
+                activities: { ar: ["التجول واستكشاف البيوت القديمة والمساجد المرجانية المهجورة", "التصوير الفوتوغرافي التوثيقي التاريخي في القرية"], en: ["Explore historic abandoned coral-stone structures", "Take evocative cultural and vintage documentary photographs"] },
+                location: { ar: "منطقة الجزيرة الحمراء، جنوب رأس الخيمة", en: "Al Jazirah Al Hamra, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Al+Jazirah+Al+Hamra"
+            },
+            {
+                id: 54, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🦪",
+                name: { ar: "مزرعة السويدي للؤلؤ", en: "Suwaidi Pearls Farm" },
+                desc: { ar: "المزرعة العربية الأولى والوحيدة المستزرعة لآلئ الخليج الطبيعية، وتستعرض تاريخ الغوص العريق بطريقة تفاعلية.", en: "The first and only Arabian farm cultivating authentic local pearls, sharing deep diving history." },
+                activities: { ar: ["الذهاب في جولة بحرية بالقارب الخشبي للمزرعة المائية", "المشاركة في ورشة فتح المحار واستخراج اللؤلؤ الطبيعي"], en: ["Take a traditional wooden boat ride to the floating farm", "Participate in a live oyster-opening experience to find pearls"] },
+                location: { ar: "منطقة الرمس البحرية، رأس الخيمة", en: "Al Rams, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Suwaidi+Pearls+Farm"
+            },
+            {
+                id: 55, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🏛️",
+                name: { ar: "متحف رأس الخيمة الوطني", en: "National Museum of Ras Al Khaimah" },
+                desc: { ar: "يقع في الحصن القديم الذي كان مقراً سكنياً للعائلة الحاكمة، ويضم مقتنيات أثرية وتاريخية بالغة الأهمية وقيمة.", en: "Housed in a grand historic fort that was once the royal residence, showcasing valuable relics." },
+                activities: { ar: ["مشاهدة الأسلحة التراثية والقطع الفخارية الأثرية النادرة", "التعرف على تاريخ القواسم البحري العريق والبطولي"], en: ["Examine antique weapons, rare pottery, and ethnographical items", "Learn about the legendary maritime history of Al Qasimi"] },
+                location: { ar: "منطقة رأس الخيمة القديمة", en: "Old Ras Al Khaimah town, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=National+Museum+of+Ras+Al+Khaimah"
+            },
+            {
+                id: 56, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ فلامنجو", en: "Flamingo Beach RAK" },
+                desc: { ar: "من أشهر الشواطئ العامة العائلية برأس الخيمة، يتميز بتمثالي طائر الفلامنجو العملاقين والمياه الهادئة الدافئة الآمنة.", en: "A famous public beach in RAK, named after its huge twin flamingo statues and calm safe waters." },
+                activities: { ar: ["السباحة العائلية الممتعة والاسترخاء الشمسي الهادئ", "ممارسة ألعاب اللياقة الشاطئية والكرة الطائرة المفتوحة"], en: ["Enjoy safe family swimming and golden sunbathing", "Play casual beach volleyball or walk on soft sand tracks"] },
+                location: { ar: "وسط مدينة رأس الخيمة، بالقرب من الكورنيش", en: "Central Ras Al Khaimah, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Flamingo+Beach+Ras+Al+Khaimah"
+            },
+            {
+                id: 57, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "♨️",
+                name: { ar: "عين خت الكبريتية", en: "Khatt Springs" },
+                desc: { ar: "ينابيع مياه جوفية طبيعية كبريتية حارة تقع وسط واحة ريفية، ومقصودة جداً لأغراض الاستشفاء البدني الطبيعي.", en: "Natural thermal sulfur-rich springs tucked in a rural oasis, highly sought for wellness and healing." },
+                activities: { ar: ["الاستجمام في المياه الكبريتية الحارة لراحة المفاصل", "الاسترخاء التام في المرافق الصحية والمنتجعات المحيطة"], en: ["Soak in therapeutic hot springs to relax your body", "Relax inside modern spa facilities and treatment rooms"] },
+                location: { ar: "منطقة خت، شرق رأس الخيمة", en: "Khatt Village, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Khatt+Springs"
+            },
+            {
+                id: 58, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🛶",
+                name: { ar: "كورنيش القواسم", en: "Corniche Al Qasimi" },
+                desc: { ar: "ممشى عائلي ممتد يمتد على طول خور رأس الخيمة الطبيعي، تملؤه أشجار القرم والمطاعم والمقاهي العصرية الفاخرة.", en: "A long scenic waterfront promenade along the natural RAK creek, lined with mangroves and cafes." },
+                activities: { ar: ["المشي وركوب الدراجات بجانب مياه الخور الصافية", "تناول عشاء فاخر وإطلالة مباشرة على سارية العلم الكبرى"], en: ["Walk and bike along the dynamic creek-side pathways", "Dine at premium restaurants overlooking the grand flagpole"] },
+                location: { ar: "شارع الكورنيش، قلب رأس الخيمة", en: "Corniche Road, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Corniche+Al+Qasimi"
+            },
+            {
+                id: 59, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏕️",
+                name: { ar: "صحراء وادي العيم", en: "Wadi El Aim Desert" },
+                desc: { ar: "كثبان رملية ذهبية ساحرة وممتازة تمتاز بالهدوء التام والبعد عن صخب المدينة، مفضلة للتخييم البري الممتع.", en: "Serene golden dunes and rugged desert landscapes, highly favored for world-class night camping." },
+                activities: { ar: ["قيادة الدراجات الصحراوية فوق الكثبان التلال", "إشعال النار والشواء وسط أجواء برية شتوية خلابة"], en: ["Drive dune buggies over high sand crests", "Set up campfires and enjoy open-air desert barbecues"] },
+                location: { ar: "منطقة العيم، رأس الخيمة", en: "Wadi El Aim, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Wadi+El+Aim"
+            },
+            {
+                id: 60, emirate: { ar: "رأس الخيمة", en: "Ras Al Khaimah" }, category: { ar: "ترفيه وألعاب", en: "Entertainment & Games" }, emoji: "🏔️",
+                name: { ar: "منصة المشاهدة بجبل جيس", en: "Jebel Jais Viewing Deck Park" },
+                desc: { ar: "منتزه ومنصة مرتفعة مبنية ومجهزة بالكامل تضم تلسكوبات حديثة لرؤية الوديان الجبلية العميقة والساحل بوضوح وبانورامية.", en: "A custom-designed mountain park with modern viewing platforms and binoculars." },
+                activities: { ar: ["رؤية الوديان السحيقة العميقة عبر التلسكوبات المكبرة", "تناول القهوة الساخنة والوجبات الخفيفة في أعلى مقهى بالدولة"], en: ["Peer down deep grand canyons via high-powered binoculars", "Enjoy hot drinks at the highest cliff-side cafe in the UAE"] },
+                location: { ar: "قرب قمة جبل جيس، رأس الخيمة", en: "Jebel Jais, Ras Al Khaimah" }, maps: "https://maps.google.com/?q=Jebel+Jais+Viewing+Deck+Park"
+            },
+
+            // ==================== 7. الفجيرة / FUJAIRAH ====================
+            {
+                id: 61, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🕌",
+                name: { ar: "مسجد البدية التاريخي", en: "Al Badiyah Mosque" },
+                desc: { ar: "أقدم مسجد أثري قائم ومبني بالكامل من الطين والحجارة في دولة الإمارات، ويتميز بقبابه الأربع وهندسته الفريدة اللطيفة.", en: "The oldest surviving historic mosque in the UAE, distinctively engineered with mud and stone." },
+                activities: { ar: ["التعرف على نمط البناء والتهوية الأثري الإسلامي القديم", "صعود برجي المراقبة الأثريين خلف المسجد التراثي"], en: ["Examine ancient mud construction and cooling architecture", "Climb the twin historic stone watchtowers behind the mosque"] },
+                location: { ar: "قرية البدية، شمال مدينة الفجيرة", en: "Al Badiyah Village, Fujairah" }, maps: "https://maps.google.com/?q=Al+Badiyah+Mosque"
+            },
+            {
+                id: 62, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏝️",
+                name: { ar: "جزيرة السنوبي", en: "Snoopy Island" },
+                desc: { ar: "صخرة بحرية طبيعية شهيرة تشبه شخصية الكرتون سنوبي، وتعد جنة استوائية نادرة لممارسة الغوص السطحي ومشاهدة السلاحف.", en: "An iconic offshore rock formation shaped like Snoopy, offering a world-class marine life sanctuary." },
+                activities: { ar: ["الغوص السطحي لرؤية الشعاب المرجانية الملونة", "جدف بقوارب الكاياك الشفافة حول الصخرة البحرية الجميلة"], en: ["Go snorkeling to view vivid living coral reefs and sea turtles", "Rent clear glass kayaks to paddle around the historic island rock"] },
+                location: { ar: "قبالة شاطئ منطقة العقة، الفجيرة", en: "Al Aqah, Fujairah" }, maps: "https://maps.google.com/?q=Snoopy+Island"
+            },
+            {
+                id: 63, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏰",
+                name: { ar: "قلعة الفجيرة", en: "Fujairah Fort" },
+                desc: { ar: "حصن دفاعي جبلي شامخ بني في القرن السادس عشر على تلة صخرية مرتفعة، صمد تاريخياً أمام الهجمات.", en: "A massive 16th-century fortress standing proudly on a high rocky hill overlooking the old town." },
+                activities: { ar: ["استكشاف قاعات الأسلحة والأبراج الدائرية والمربعة العتيقة", "التجول في قرية التراث المرممة المجاورة أسفل القلعة"], en: ["Explore internal weapon quarters, round and square towers", "Stroll through the fully restored heritage village at the base"] },
+                location: { ar: "منطقة القلعة، وسط مدينة الفجيرة", en: "Fujairah City, Fujairah" }, maps: "https://maps.google.com/?q=Fujairah+Fort"
+            },
+            {
+                id: 64, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏞️",
+                name: { ar: "وادي الوريعة", en: "Wadi Wurayah National Park" },
+                desc: { ar: "أول محمية جبلية طبيعية كبرى وشلال عذب ومستدام في الدولة، وهي موطن لنباتات وحيوانات نادرة كالنمر العربي.", en: "The UAE's first protected mountain wetland and sustainable natural waterfall reserve." },
+                activities: { ar: ["مشاهدة الشلالات الطبيعية والبرك المائية العذبة وسط الصخور", "رصد ومراقبة الفراشات والحيوانات البرية المحمية بيئياً"], en: ["Admire natural continuous waterfalls and fresh rock pools", "Spot protected local butterflies and rare mountain wildlife"] },
+                location: { ar: "بين بدية وخورفكان، الفجيرة", en: "Wadi Wurayah, Fujairah" }, maps: "https://maps.google.com/?q=Wadi+Wurayah"
+            },
+            {
+                id: 65, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "متاحف", en: "Museums" }, emoji: "🏛️",
+                name: { ar: "متحف الفجيرة", en: "Fujairah Museum" },
+                desc: { ar: "متحف محلي ثري يعرض تاريخ المنطقة الممتد من العصر البرونزي، ويضم قطعاً فريدة مستخرجة أثرياً.", en: "An enriching regional museum displaying Bronze Age archaeology and traditional lifestyle." },
+                activities: { ar: ["رؤية نعامة أثرية مصنوعة من الفخار تعود لألف عام قبل الميلاد", "استكشاف معروضات المهن التراثية كصيد الأسماك والزراعة القديمة"], en: ["See a rare 2,200-year-old historic ceramic ostrich egg artifact", "Explore models of ancient coastal fishing and regional agriculture"] },
+                location: { ar: "بجانب قلعة الفجيرة، الفجيرة", en: "Next to Fujairah Fort, Fujairah" }, maps: "https://maps.google.com/?q=Fujairah+Museum"
+            },
+            {
+                id: 66, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "🏰",
+                name: { ar: "قلعة البثنة", en: "Al Bithnah Fort" },
+                desc: { ar: "حصن تاريخي مبني في ممر جبلي استراتيجي لحراسة الطرق التجارية الممتدة بين الساحل والداخل الصخري.", en: "A strategic historic stone fortress built to guard vital mountain passes and trade paths." },
+                activities: { ar: ["تأمل الهندسة الدفاعية الذكية للجدران والأبراج السميكة", "التقاط صور رائعة ومميزة للقلعة محاطة بمزارع النخيل الخصبة"], en: ["Admire the clever military engineering of thick mud-stone walls", "Take scenic photos of the fort framed by wild green date groves"] },
+                location: { ar: "قرية البثنة، الفجيرة", en: "Al Bithnah, Fujairah" }, maps: "https://maps.google.com/?q=Al+Bithnah+Fort"
+            },
+            {
+                id: 67, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ العقة", en: "Al Aqah Beach" },
+                desc: { ar: "أبرز الشواطئ السياحية الفاخرة على الساحل الشرقي، يتميز برماله الذهبية المطلة مباشرة على المحيط الهندي العاصف.", en: "The premier luxury resort beachfront destination on the UAE east coast facing the Indian Ocean." },
+                activities: { ar: ["ممارسة رياضة الغوص العميق لرؤية أسماك القرش الصديقة والسلحفاة", "الاسترخاء في المنتجعات الشاطئية الراقية"], en: ["Go deep sea diving to spot friendly reef sharks and turtles", "Relax at world-class luxury beach resorts with open ocean views"] },
+                location: { ar: "منطقة العقة، شمال الفجيرة", en: "Al Aqah, Fujairah" }, maps: "https://maps.google.com/?q=Al+Aqah+Beach"
+            },
+            {
+                id: 68, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "معالم تاريخية", en: "Historical Landmarks" }, emoji: "👑",
+                name: { ar: "قصر أوحلة الأثري", en: "Qasr Al Hayl" },
+                desc: { ar: "قصر ريفي تاريخي تراثي جميل يقع في عمق وادي الحيل الجبلي، كان مقراً صيفياً آمناً ومحصناً لحكام الفجيرة.", en: "A beautifully preserved rural stone palace located deep within the scenic mountain valley." },
+                activities: { ar: ["استكشاف غرف المجالس العائلية القديمة والمطابخ الحجرية والبرج", "المشي الخفيف في مسارات وادي الحيل الطبيعي الصخري المحيط"], en: ["Explore historic royal council rooms, stone kitchens, and towers", "Take a light nature walk through the surrounding rock valley trail"] },
+                location: { ar: "وادي الحيل، الفجيرة", en: "Wadi Al Hayl, Fujairah" }, maps: "https://maps.google.com/?q=Qasr+Al+Hayl"
+            },
+            {
+                id: 69, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏖️",
+                name: { ar: "شاطئ المظلات بالفجيرة", en: "Umbrella Beach Fujairah" },
+                desc: { ar: "وجهة ترفيهية شاطئية عامة ومطورة حديثاً بالكامل، تضم مسارات للمشي والعديد من المطاعم والمقاهي العصرية والمبهجة.", en: "A recently redeveloped, trendy public beachfront destination featuring clean modern layouts." },
+                activities: { ar: ["المشي وممارسة اللياقة البدنية والعدو على المسار الساحلي المطاطي", "تناول الأطعمة اللذيذة من عربات الطعام والمقاهي المطلة على البحر"], en: ["Jog and exercise on the clean seaside rubber sports track", "Dine at modern food trucks and cafes directly facing the calm ocean"] },
+                location: { ar: "شارع كورنيش الفجيرة، الفجيرة", en: "Umbrella Beach, Fujairah" }, maps: "https://maps.google.com/?q=Umbrella+Beach+Fujairah"
+            },
+            {
+                id: 70, emirate: { ar: "الفجيرة", en: "Fujairah" }, category: { ar: "طبيعة وشواطئ", en: "Nature & Beaches" }, emoji: "🏞️",
+                name: { ar: "حديقة عين مضب الكبريتية", en: "Madhab Sulphur Spring Park" },
+                desc: { ar: "حديقة عامة عائلية فسيحة تضم ينابيع مياه دافئة طبيعية تحتوي على معادن كبريتية شافية وممتازة للصحة.", en: "A spacious public family park built around natural mineral-rich thermal healing springs." },
+                activities: { ar: ["الاستجمام والسباحة في المسابح المخصصة للمياه الكبريتية الشافية", "الاسترخاء والشواء في الساحات العشبية الخضراء الفسيحة المظللة"], en: ["Swim in dedicated public pools fed by thermal healing springs", "Relax and have a barbecue lunch on wide shaded grass lawns"] },
+                location: { ar: "منطقة مضب، غرب مدينة الفجيرة", en: "Madhab, Fujairah" }, maps: "https://maps.google.com/?q=Madhab+Sulphur+Spring+Park"
+            }
+        ];
+
+        const emiratesList = {
+            ar: ["أبوظبي", "دبي", "الشارقة", "عجمان", "أم القيوين", "رأس الخيمة", "الفجيرة"],
+            en: ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm Al Quwain", "Ras Al Khaimah", "Fujairah"]
+        };
+
+        const categoriesList = {
+            ar: ["الكل", "معالم تاريخية", "طبيعة وشواطئ", "ترفيه وألعاب", "متاحف"],
+            en: ["All", "Historical Landmarks", "Nature & Beaches", "Entertainment & Games", "Museums"]
+        };
+
+        let selectedCategory = 'الكل';
+
+        function updateUI() {
+            const lang = currentLang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('pageTitle').innerText = translations[lang].title;
+            document.getElementById('logoText').innerText = translations[lang].logo;
+            document.getElementById('navHome').innerText = translations[lang].home;
+            document.getElementById('navDestinations').innerText = translations[lang].destinations;
+            document.getElementById('heroTitle').innerText = translations[lang].heroTitle;
+            document.getElementById('heroDesc').innerText = translations[lang].heroDesc;
+            document.getElementById('searchInput').placeholder = translations[lang].searchPlaceholder;
+            document.getElementById('searchBtn').innerText = translations[lang].searchBtn;
+            document.getElementById('footerText').innerText = translations[lang].footer;
+            document.querySelector('.lang-btn').innerText = lang === 'ar' ? 'English' : 'العربية';
+
+            const emirateFilter = document.getElementById('emirateFilter');
+            emirateFilter.innerHTML = `<option value="">${translations[lang].allEmirates}</option>`;
+            emiratesList[lang].forEach((em, idx) => {
+                emirateFilter.innerHTML += `<option value="${emiratesList['ar'][idx]}">${em}</option>`;
+            });
+
+            const categoryContainer = document.getElementById('categoryFilterContainer');
+            categoryContainer.innerHTML = '';
+            categoriesList[lang].forEach((cat, idx) => {
+                const catKeyAr = categoriesList['ar'][idx];
+                const isActive = selectedCategory === catKeyAr ? 'active' : '';
+                categoryContainer.innerHTML += `<button class="filter-btn ${isActive}" onclick="filterByCategory('${catKeyAr}', this)">${cat}</button>`;
+            });
+
+            const emiratesGridSummary = document.getElementById('emiratesGridSummary');
+            emiratesGridSummary.innerHTML = '';
+            emiratesList[lang].forEach((em, idx) => {
+                emiratesGridSummary.innerHTML += `
+                    <div class="emirate-item">
+                        <h3>${em}</h3>
+                        <p>10 ${translations[lang].destSuffix}</p>
+                    </div>
+                `;
+            });
+
+            renderDestinations();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            updateUI();
+        }
+
+        function filterByCategory(catAr, btn) {
+            selectedCategory = catAr;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderDestinations();
+        }
+
+        function filterDestinations() {
+            renderDestinations();
+        }
+
+        function renderDestinations() {
+            const grid = document.getElementById('destinationsGrid');
+            grid.innerHTML = '';
+
+            const selectedEmirateAr = document.getElementById('emirateFilter').value;
+            const searchKeyword = document.getElementById('searchInput').value.toLowerCase();
+
+            destinationsData.forEach(dest => {
+                if (selectedCategory !== 'الكل' && dest.category.ar !== selectedCategory) return;
+                if (selectedEmirateAr && dest.emirate.ar !== selectedEmirateAr) return;
+                
+                const nameText = dest.name[currentLang].toLowerCase();
+                const descText = dest.desc[currentLang].toLowerCase();
+                if (searchKeyword && !nameText.includes(searchKeyword) && !descText.includes(searchKeyword)) return;
+
+                const card = document.createElement('div');
+                card.className = 'destination-card';
+                card.onclick = () => openModal(dest);
+
+                card.innerHTML = `
+                    <div class="flag-card-bg">
+                        <div class="flag-red"></div>
+                        <div class="flag-stripes">
+                            <div class="stripe-green"></div>
+                            <div class="stripe-white"></div>
+                            <div class="stripe-black"></div>
+                        </div>
+                        <div class="flag-icon">${dest.emoji}</div>
+                    </div>
+                    <div class="card-content">
+                        <span class="emirate-badge">${dest.emirate[currentLang]}</span>
+                        <h3 class="card-title">${dest.name[currentLang]}</h3>
+                        <p class="card-description">${dest.desc[currentLang]}</p>
+                        <div class="card-footer">
+                            <span class="location-info"><i class="fas fa-map-marker-alt"></i> ${dest.emirate[currentLang]}</span>
+                            <button class="view-btn">${translations[currentLang].viewBtn}</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(dest) {
+            const lang = currentLang;
+            document.getElementById('modalEmirateText').innerText = dest.emirate[lang];
+            document.getElementById('modalTitle').innerText = dest.name[lang];
+            document.getElementById('modalCategory').innerText = dest.category[lang];
+            document.getElementById('modalDescription').innerText = dest.desc[lang];
+            
+            document.getElementById('modalActTitle').innerHTML = `<i class="fas fa-tasks"></i> ${translations[lang].actTitle}`;
+            document.getElementById('modalLocTitle').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${translations[lang].locTitle}`;
+            document.getElementById('modalMapsBtnText').innerText = translations[lang].mapsBtn;
+
+            const actList = document.getElementById('modalActivities');
+            actList.innerHTML = '';
+            dest.activities[lang].forEach(act => {
+                actList.innerHTML += `<li>${act}</li>`;
+            });
+
+            document.getElementById('modalLocation').innerText = dest.location[lang];
+            document.getElementById('mapsLink').href = dest.maps;
+
+            document.getElementById('destinationModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('destinationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('destinationModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
